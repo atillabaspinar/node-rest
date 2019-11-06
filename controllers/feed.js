@@ -127,6 +127,22 @@ exports.updatePost = (req, res, next) => {
     });
 };
 
+exports.deletePost = (req, res, next) => {
+    Post.findById(req.params.postId).then(result => {
+        if (result) {
+            clearImage(result.imageUrl);
+            return result.remove();
+        }
+    }).then(result => {
+        res.status(200).json({message: 'post deleted'});
+    }).catch(err => {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+            next();
+        }
+    });
+};
+
 clearImage = (filePath) => {
     filePath = path.join(__dirname, '..', filePath);
     fs.unlink(filePath, err=> console.log(err));
